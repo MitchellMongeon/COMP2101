@@ -1,15 +1,29 @@
 #!/bin/bash
 #Script to show info about the PC
 
-#shows FQDN of the PC
-echo 'FQDN:' $(hostname -A |awk '{print $1}')
+#Gathering need info
+#Creating FQDN variable for FQDN
+fqdn=$(hostname -f)
 
-#Shows more information on the PC
-echo 'Host Information:' &(hostnamectl | grep -v heardware)
+#OS variable for name & version
+source /etc/os-release
+OS=$(echo $PRETTY_NAME)
 
-#shows the current IPv4 and IPv6 addresses
-echo 'IP Addresses:' &(ip a | grep inet | tail -n 5 |head -n 4 | awk '{print $2}' | cut -d / -f1)
+#IP variable
+IP=$(hostname -I | awk '{print $1}')
 
-#shows information about the Filesystem
-echo 'Root Filesystem Status:' 
-df -h /dev/sda3
+#Vsriable for Root Filesystem
+Free=$(df -h /root | grep -v Avail | awk '{print $3}')
+
+#script to show the info
+
+cat <<EOF
+
+echo 'Report for myvm'
+====================
+echo 'FQDN: $fqdn'
+echo 'Operating System: $OS'
+echo 'IP address: $IP'
+echo 'Root Filesystem Free Space: $Free'
+=====================
+EOF
